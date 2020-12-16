@@ -3,6 +3,8 @@ import {
   getSingerListRequest,
 } from '../../../api/request';
 import {
+  CHANGE_CATEGORY,
+  CHANGE_ALPHA,
   CHANGE_SINGER_LIST,
   CHANGE_PAGE_COUNT,
   CHANGE_PULLUP_LOADING,
@@ -16,6 +18,16 @@ import {
 const changeSingerList = (data) => ({
   type: CHANGE_SINGER_LIST,
   data: fromJS(data)
+});
+
+export const changeCategory = (data) => ({
+  type: CHANGE_CATEGORY,
+  data
+});
+
+export const changeAlpha = (data) => ({
+  type: CHANGE_ALPHA,
+  data
 });
 
 export const changePageCount = (data) => ({
@@ -59,7 +71,7 @@ export const refreshMoreHotSingerList = () => {
   return (dispatch, getState) => {
     const pageCount = getState().getIn(['singers', 'pageCount']);
     const singerList = getState().getIn(['singers', 'singerList']).toJS();
-    getSingerListRequest(pageCount).then(res => {
+    getHotSingerListRequest(pageCount).then(res => {
       const data = [...singerList, ...res.artists];
       dispatch(changeSingerList(data));
       dispatch(changePullUpLoading(false));

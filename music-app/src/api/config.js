@@ -271,6 +271,13 @@ let kvArray = [
       type: 2,
       area: 0,
     }
+  ],
+  [
+    4003, {
+      type: 3,
+      area: 0,
+    }
   ]
 ]
 export const categoryMap = new Map(kvArray);
+

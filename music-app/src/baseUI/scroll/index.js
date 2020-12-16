@@ -1,13 +1,36 @@
-import React, { forwardRef, useState, useEffect, useRef, useImperativeHandle } from 'react';
+import React, { forwardRef, useState, useEffect, useRef, useImperativeHandle, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import BScroll from 'better-scroll';
 import styled from 'styled-components';
+import Loading from '../loading';
+import LoadingV2 from '../loading-v2';
+import { debounce } from '../../api/utils';
 
 const ScrollContainer = styled.div`
   width: 100%;
   height: 100%;
   overflow: hidden;
-`
+`;
+
+const PullUpLoading = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 5px;
+  width: 60px;
+  height: 60px;
+  margin: auto;
+  z-index: 100;
+`;
+
+export const PullDownLoading = styled.div`
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 30px;
+  margin: auto;
+  z-index: 100;
+`;
 
 /* 
 函数式组件天生不具备被上层组件直接调用 ref 的条件，
@@ -20,6 +43,18 @@ const Scroll = forwardRef((props, ref) => {
 
   const { direction, click, refresh, pullUpLoading, pullDownLoading, bounceTop, bounceBottom } = props;
   const { pullUp, pullDown, onScroll } = props;
+
+  let pullUpDebounce = useMemo(() => {
+    return debounce(pullUp, 300)
+  }, [pullUp]);
+  
+  let pullDownDebounce = useMemo(() => {
+    return debounce(pullDown, 300)
+  }, [pullDown]);
+
+
+  const PullUpdisplayStyle = pullUpLoading ? { display: "block" } : { display: "none" };
+  const PullDowndisplayStyle = pullDownLoading ? { display: "block" } : { display: "none" };
 
   useEffect(() => {
     const scroll = new BScroll(scrollContainerRef.current, {
@@ -66,13 +101,13 @@ const Scroll = forwardRef((props, ref) => {
     bScroll.on('scrollEnd', () => {
       // 判断是否滑动到了底部
       if (bScroll.y <= bScroll.maxScrollY + 100) {
-        pullUp();
+        pullUpDebounce();
       }
     });
     return () => {
       bScroll.off('scrollEnd');
     }
-  }, [pullUp, bScroll]);
+  }, [pullUp, pullUpDebounce, bScroll]);
 
   // 进行下拉的判断，调用下拉刷新的函数
   useEffect(() => {
@@ -82,13 +117,13 @@ const Scroll = forwardRef((props, ref) => {
     bScroll.on('touchEnd', (pos) => {
       // 判断用户的下拉动作
       if (pos.y > 50) {
-        pullDown();
+        pullDownDebounce();
       }
     });
     return () => {
       bScroll.off('touchEnd');
     }
-  }, [pullDown, bScroll]);
+  }, [pullDown, pullDownDebounce, bScroll]);
 
   // 一般和forwardRef一起使用，ref已经在forwardRef中默认传入
   useImperativeHandle(ref, () => ({
@@ -109,6 +144,9 @@ const Scroll = forwardRef((props, ref) => {
     // 此处添加ref是为了获取dom，在new BScroll时以这个作为包裹的父容器
     <ScrollContainer ref={scrollContainerRef}>
       {props.children}
+      {/* 滑到底部加载动画 */}
+      <PullUpLoading style={PullUpdisplayStyle}><Loading></Loading></PullUpLoading>
+      <PullDownLoading style={PullDowndisplayStyle}><LoadingV2></LoadingV2></PullDownLoading>
     </ScrollContainer>
   );
 })

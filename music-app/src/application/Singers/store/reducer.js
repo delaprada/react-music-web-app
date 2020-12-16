@@ -2,6 +2,8 @@ import { fromJS } from 'immutable';
 import * as actionTypes from './constants';
 
 const defaultState = fromJS({
+  category: '',
+  alpha: '',
   singerList: [],
   enterLoading: true,
   pullUpLoading: false,
@@ -11,6 +13,10 @@ const defaultState = fromJS({
 
 export default (state = defaultState, action) => {
   switch (action.type) {
+    case actionTypes.CHANGE_CATEGORY:
+      return state.set('category', action.data);
+    case actionTypes.CHANGE_ALPHA:
+      return state.set('alpha', action.data);
     case actionTypes.CHANGE_SINGER_LIST:
       return state.set('singerList', action.data);
     case actionTypes.CHANGE_PAGE_COUNT:
