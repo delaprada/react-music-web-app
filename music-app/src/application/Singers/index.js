@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import LazyLoad, { forceCheck } from 'react-lazyload';
 import { connect } from 'react-redux';
+import { renderRoutes } from 'react-router-config';
 import Scroll from '../../baseUI/scroll';
 import Horizen from '../../baseUI/horizen-item';
 import Loading from '../../baseUI/loading';
@@ -55,6 +56,10 @@ function Singers(props) {
     pullDownRefreshDispatch(category, alpha);
   }
 
+  const enterDetail = (id) => {
+    props.history.push(`/singers/${id}`)
+  }
+
   const renderSingerList = () => {
     const list = singerList ? singerList.toJS() : [];
 
@@ -63,10 +68,10 @@ function Singers(props) {
         {
           list.map((item, index) => {
             return (
-              <ListItem key={item.accountId + "" + index}>
+              <ListItem key={item.accountId + "" + index} onClick={() => enterDetail(item.id)}>
                 <div className="img_wrapper">
                   <LazyLoad placeholder={<img width="100%" height="100%" src={singerPic} alt="music" />}>
-                  <img src={`${item.picUrl}?param=300x300`} width="100%" height="100%" alt="music" />
+                    <img src={`${item.picUrl}?param=300x300`} width="100%" height="100%" alt="music" />
                   </LazyLoad>
                 </div>
                 <span className="name">{item.name}</span>
@@ -106,8 +111,9 @@ function Singers(props) {
         >
           {renderSingerList()}
         </Scroll>
-        { enterLoading ? <EnterLoading><Loading></Loading></EnterLoading> : null }
+        {enterLoading ? <EnterLoading><Loading></Loading></EnterLoading> : null}
       </ListContainer>
+      {renderRoutes(props.route.routes)}
     </div>
   )
 }
@@ -144,7 +150,7 @@ const mapDispatchToProps = (dispatch) => {
     // 滑到最底部刷新部分的处理
     pullUpRefreshDispatch(category, alpha, hot, count) {
       dispatch(changePullUpLoading(true));
-      dispatch(changePageCount(count+1));
+      dispatch(changePageCount(count + 1));
       if (hot) {
         dispatch(refreshMoreHotSingerList());
       } else {

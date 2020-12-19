@@ -11,6 +11,7 @@ import {
   SongList,
 } from './style';
 import { EnterLoading } from '../Singers/style';
+import { renderRoutes } from 'react-router-config';
 
 function Rank(props) {
   const { rankList: list, loading } = props;
@@ -23,6 +24,10 @@ function Rank(props) {
       getRankListDispatch();
     }
   }, []);
+
+  const enterDetail = (detail) => {
+    props.history.push(`/rank/${detail.id}`);
+  }
 
   let globalStartIndex = filterIndex(rankList);
   let officialList = rankList.slice(0, globalStartIndex);
@@ -46,7 +51,7 @@ function Rank(props) {
         {
           list.map((item, index) => {
             return (
-              <ListItem key={`${item.coverImgId}${index}`} tracks={item.tracks}>
+              <ListItem key={`${item.coverImgId}${index}`} tracks={item.tracks} onClick={() => enterDetail(item)}>
                 <div className="img_wrapper">
                   <img src={item.coverImgUrl} alt=""/>
                   <div className="decorate"></div>
@@ -74,6 +79,7 @@ function Rank(props) {
           { loading ? <EnterLoading><Loading></Loading></EnterLoading> : null }
         </div>
       </Scroll>
+      {renderRoutes(props.route.routes)}
     </Container>
   )
 }
