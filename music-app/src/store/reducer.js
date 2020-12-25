@@ -3,6 +3,8 @@ import { reducer as recommendReducer } from '../application/Recommend/store/inde
 import { reducer as singersReducer } from '../application/Singers/store/index';
 import { reducer as rankReducer } from '../application/Rank/store/index';
 import { reducer as albumReducer } from '../application/Album/store/index';
+import { reducer as singerInfoReducer} from '../application/Singer/store/index';
+import { reducer as playerReducer } from '../application/Player/store/index';
 
 // combineReducers里的对象便是state
 export default combineReducers ({
@@ -10,4 +12,6 @@ export default combineReducers ({
   singers: singersReducer,
   rank: rankReducer,
   album: albumReducer,
+  singerInfo: singerInfoReducer,
+  player: playerReducer,
 });

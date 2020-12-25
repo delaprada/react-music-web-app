@@ -77,6 +77,7 @@ export const CollectButton = styled.div`
 
 export const SongListWrapper = styled.div`
   position: absolute;
+  z-index: 50;
   top: 0;
   left: 0;
   bottom: 0;
