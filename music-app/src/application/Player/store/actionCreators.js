@@ -5,10 +5,13 @@ import {
   SET_PLAYING_STATE,
   SET_SEQUENCE_PLAYLIST,
   SET_PLAYLIST,
-  SETS_PLAY_MODE,
+  SET_PLAY_MODE,
   SET_CURRENT_INDEX,
   SET_SHOW_PLAYLIST,
+  DELETE_SONG,
+  INSERT_SONG,
 } from './constants';
+import { getSongDetailRequest } from '../../../api/request';
 
 export const changeCurrentSong = (data) => ({
   type: SET_CURRENT_SONG,
@@ -25,7 +28,7 @@ export const changePlayingState = (data) => ({
   data
 });
 
-export const changeSequencePlaying = (data) => ({
+export const changeSequencePlayList = (data) => ({
   type: SET_SEQUENCE_PLAYLIST,
   data: fromJS(data),
 });
@@ -36,7 +39,7 @@ export const changePlayList = (data) => ({
 });
 
 export const changePlayMode = (data) => ({
-  type: SET_CURRENT_INDEX,
+  type: SET_PLAY_MODE,
   data
 });
 
@@ -50,4 +53,21 @@ export const changeShowPlayList = (data) => ({
   data
 });
 
+export const deleteSong = (data) => ({
+  type: DELETE_SONG,
+  data
+});
 
+export const insertSong = (data) => ({
+  type: INSERT_SONG,
+  data
+});
+
+export const getSongDetail = (id) => {
+  return (dispatch) => {
+    getSongDetailRequest(id).then(data => {
+      let song = data.songs[0];
+      dispatch(insertSong(song));
+    })
+  }
+}

@@ -5,6 +5,7 @@ import SongsList from "../SongsList/index";
 import Header from "../../baseUI/header/index";
 import Scroll from "../../baseUI/scroll/index";
 import Loading from '../../baseUI/loading/index';
+import MusicNote from '../../baseUI/music-note/index';
 import { HEADER_HEIGHT } from "./../../api/config";
 import { getSingerInfo, changeEnterLoading } from './store/actionCreators';
 import {
@@ -19,7 +20,8 @@ function Singer(props) {
   const { 
     artist: immutableArtist,
     songs: immutableSongs,
-    loading
+    loading,
+    songsCount,
   } = props;
   const { getSingerDataDispatch } = props;
 
@@ -34,6 +36,11 @@ function Singer(props) {
   const songScroll = useRef();
   const header = useRef();
   const layer = useRef();
+  const musicNoteRef = useRef();
+
+  const musicAnimation = (x, y) => {
+    musicNoteRef.current.startAnimation({x, y});
+  }
 
   // 图片初始高度
   const initialHeight = useRef(0);
@@ -112,7 +119,7 @@ function Singer(props) {
       unmountOnExit
       onExited={() => props.history.goBack()}
     >
-      <Container>
+      <Container play={songsCount}>
         <Header
           ref={header}
           title={artist.name}
@@ -139,11 +146,13 @@ function Singer(props) {
             <SongsList
               songs={songs}
               showCollect={false}
+              musicAnimation={musicAnimation}
             >
             </SongsList>
           </Scroll>
         </SongListWrapper>
         { loading ? (<Loading></Loading>) : null }
+        <MusicNote ref={musicNoteRef}></MusicNote>
       </Container>
     </CSSTransition>
   );
@@ -153,6 +162,7 @@ const mapStateToProps = (state) => ({
   artist: state.getIn(['singerInfo', 'artist']),
   songs: state.getIn(['singerInfo', 'songsOfArtist']),
   loading: state.getIn(['singerInfo', 'loading']),
+  songsCount: state.getIn(['player', 'playList']).size,
 });
 
 const mapDispatchToProps = (dispatch) => {

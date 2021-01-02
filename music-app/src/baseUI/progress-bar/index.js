@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
 import style from '../../assets/global-style';
 import { prefixStyle } from '../../api/utils';
+const transform = prefixStyle('transform');
 
 const ProgressBarWrapper = styled.div`
   height:30px;
@@ -42,9 +43,21 @@ function ProgressBar(props) {
   const progressBtn = useRef();
   const [touch, setTouch] = useState({});
 
+  const { percent } = props;
   const { percentChange } = props;
 
   const progressBtnWidth = 16;
+
+  //监听percent，让进度条根据播放进度发生变化
+  useEffect(() => {
+    if (percent >= 0 && percent <= 1 && !touch.initiated) {
+      const barWidth = progressBar.current.clientWidth - progressBtnWidth;
+      const offsetWidth = percent * barWidth;
+      progress.current.style.width = `${offsetWidth}px`;
+      progressBtn.current.style[transform] = `translate3d(${offsetWidth}px, 0, 0)`;
+    }
+    // eslint-disable-next-line
+  }, [percent]);
 
   const _offset = (offsetWidth) => {
     // 设置进度条长度为offsetWidth，按钮的x偏移量为offsetWidth
@@ -63,7 +76,7 @@ function ProgressBar(props) {
   };
 
   const progressTouchMove = (e) => {
-    if(!touch.initiated) {
+    if (!touch.initiated) {
       return;
     }
     const deltaX = e.touches[0].pageX - touch.startX;
@@ -86,7 +99,7 @@ function ProgressBar(props) {
 
   // 点击事件（与前面的拖动事件效果不同）
   const progressClick = (e) => {
-    // 进度条当前长度
+    // 进度条当前长度，getBoundingClientRect可获取DOM元素到浏览器可视范围的距离
     const rect = progressBar.current.getBoundingClientRect();
     const offsetWidth = e.pageX - rect.left;
     _offset(offsetWidth);
@@ -96,14 +109,14 @@ function ProgressBar(props) {
   const _changePercent = () => {
     const barWidth = progressBar.current.clientWidth - progressBtnWidth;
     const curPercent = progress.current.clientWidth / barWidth;
-    
+
     // 把新的进度传给回调函数并执行
     percentChange(curPercent);
   }
 
   return (
     <ProgressBarWrapper>
-      <div className="bar-inner" 
+      <div className="bar-inner"
         ref={progressBar}
         onClick={progressClick}
       >

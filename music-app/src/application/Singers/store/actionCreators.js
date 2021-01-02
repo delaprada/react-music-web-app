@@ -70,8 +70,10 @@ export const getHotSingerList = () => {
 export const refreshMoreHotSingerList = () => {
   return (dispatch, getState) => {
     const pageCount = getState().getIn(['singers', 'pageCount']);
+    console.log(pageCount);
     const singerList = getState().getIn(['singers', 'singerList']).toJS();
     getHotSingerListRequest(pageCount).then(res => {
+      console.log(res);
       const data = [...singerList, ...res.artists];
       dispatch(changeSingerList(data));
       dispatch(changePullUpLoading(false));
